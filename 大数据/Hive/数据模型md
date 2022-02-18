@@ -1,0 +1,31 @@
+#### 数据模型
+
+  - database：在hdfs中表现为 ${hive.metastore.warehouse.dir} 目录下一个文件夹
+
+  - table：在hdfs中表现所属db目录下一个文件夹
+
+  - external table：外部表, 与table类似，不过其数据存放位置可以在任意指定路径。普通表: 删除表后, hdfs上的文件都删了,External外部表删除后, hdfs上的文件没有删除, 只是把hive的表删除了。
+
+  - partition 分区：在hdfs中表现为table目录下的子目录，便于查询。
+
+  - bucket：桶, 在hdfs中表现为同一个表目录下根据hash散列之后的多个文件, 会根据不同的文件把数据放到不同的文件中
+
+  - view：与传统数据库类似，只读，基于基本表创建
+
+> 分区表作用：将数据分类，便于查询
+> 桶表作用：简化join、便于抽样：
+#### 内部表和外部表区别
+
+* 内部表数据由Hive自身管理，外部表数据由HDFS管理；
+* 删除内部表会直接删除元数据（metadata）及存储数据，即对应HDFS的目录也会没有；而删除外部表仅仅会删除HIVE元数据，HDFS上的文件并不会被删除；
+* 内部表数据存储在数据仓库目录`hive.metastore.warehouse.dir`中，外部表数据的存储位置由自己指定。
+
+#### 排序
+
+* order by ：会对输入做全局排序，因此只有一个 reducer，会导致当输入规模较大时，需要较长的计算时间。
+
+* sort by：不是全局排序，其在数据进入reducer前完成排序。因此，如果用sort by进行排序，并且设置`mapred.reduce.tasks` > 1，则 sort by 只保证每个 reducer 的输出有序，不保证全局有序。
+
+* distribute by：根据 distribute by 指定的内容将数据分到同一个 reducer。注意不会排序，只是把相同Key放到同一个Reduce里了。
+
+* Cluster by ：除了具有 Distribute by 的功能外，还会对该字段进行排序。因此，常常认为 cluster by = distribute by + sort by。但是排序只能是倒叙排序，不能指定排序规则为 ASC 或者 DESC。

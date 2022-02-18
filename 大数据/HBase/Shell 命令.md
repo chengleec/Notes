@@ -1,0 +1,24 @@
+
+
+| 命令           | 作用                                 | 示例                                                         | 备注                                                         |
+| -------------- | ------------------------------------ | :----------------------------------------------------------- | ------------------------------------------------------------ |
+| list           | 查看所有表                           |                                                              |                                                              |
+| create         | 创建表                               | create '表名','列族1','列族2'<br>`create'Student','baseInfo','schoolInfo' ` |                                                              |
+| desc           | 查看表信息                           | `describe  'Student'`                                        |                                                              |
+| alter          | 添加列族                             | `alter  'Student', 'teacherInfo'`                            |                                                              |
+|                | 删除列族                             | `alter  'Student', {NAME => 'teacherInfo', METHOD => 'delete'}` |                                                              |
+|                | 更改列族版本限制                     | `alter  'Student',{NAME=>'baseInfo',VERSIONS=>3} `           | 默认情况下，列族只存储一个版本的数据，如果需要存储多个版本的数据，则需要修改列族的属性。修改后可通过 desc 命令查看 |
+| drop           | 删除表                               | `drop 'Student' `                                            | 删除表前需要先禁用表                                         |
+| put            | 插入数据                             | put '表名', '行键','列族:列','值'<br>`put'Student','rowkey1','baseInfo:name','tom' ` | 如果新增数据的行键值、列族名、列名与原有数据完全相同，则相当于更新操作 |
+| get            | 获取数据                             | `get 'Student','rowkey3'`  获取指定行中所有列的数据信息<br>`get 'Student','rowkey3','baseInfo'` 获取指定行中指定列族下所有列的数据信息<br>`get'Student','rowkey3','baseInfo:name'`  获取指定行中指定列的数据信息 | 按指定 rowkey 获取数据用 get                                 |
+| scan           | 获取数据                             | `scan 'Student' ` 查询整表数据<br>`scan 'Student', {COLUMN=>'baseInfo'}`  查询指定列簇的数据<br>`scan 'Student', {COLUMNS=> 'baseInfo:birthday'}`  查询指定列的数据 | 按指定条件获取数据用scan  除了列 （COLUMNS） 修饰词外，HBase 还支持 Limit（限制查询结果行数），STARTROW（ROWKEY 起始行，会先根据这个 key 定位到 region，再向后扫描）、STOPROW(结束行)、TIMERANGE（限定时间戳范围）、VERSIONS（版本数）、和 FILTER（按条件过滤行）等。 |
+| delete         | 删除数据                             | `delete 'Student','rowkey3'`删除指定行<br>`delete 'Student','rowkey3','baseInfo:name' ` 删除指定行中指定列的数据 |                                                              |
+| truncate       | 清空表数据                           | `truncate  'user' `                                          |                                                              |
+| enable/disable | 启用/禁用表                          | `enable  'Student'` / `disable 'Student' `                   | is_enabled  和 is_disabled 来检查表是否被禁用                |
+| exists         | 检查表是否存在                       | `exists  'Student'`                                          |                                                              |
+| filter         | 条件过滤                             | `scan'Student', FILTER=>"ValueFilter(=,'binary:24')" ` 查询值等于 24 的所有数据<br>`scan  'Student', FILTER=>"ValueFilter(=,'substring:yale')"`  查询值包含 yale 的所有数据<br>`scan  'Student', FILTER=>"ColumnPrefixFilter('birth')"`  查找列名中的前缀为 birth 的数据<br>`scan  'Student', FILTER=>"ColumnPrefixFilter('birth') AND ValueFilter ValueFilter(=,'substring:1998')" `查找列名中的前缀为birth且列值中包含1998的数据<br>`scan  'Student', FILTER=>"PrefixFilter('wr')"`  PrefixFilter 用于对 Rowkey 的前缀进行判断 | FILTER  中支持多个过滤条件通过括号、AND 和 OR 进行组合       |
+| flush          | 将regionserver中内存的数据写到hdfs中 | `flush  'TABLENAME'` # 整个表的数据<br>`flush  'REGIONNAME'` # 整个服务器的数据 |                                                              |
+| version        | 查看版本信息                         |                                                              |                                                              |
+| status         | 查看服务器状态                       |                                                              |                                                              |
+| help           | 获取帮助                             |                                                              |                                                              |
+| help  'status' | 获取命令的详细信息                   |                                                              |                                                              |
