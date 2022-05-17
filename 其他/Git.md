@@ -38,6 +38,7 @@ git reset --hard commit_id //重置版本
 | `git branch -d <name>` | 删除分支             |
 
 #### 关联 github
+
 | 命令                                                       | 描述                           |
 | ---------------------------------------------------------- | ------------------------------ |
 | `git remote add origin git@server-name:path/repo-name.git` | 关联远程库                     |
